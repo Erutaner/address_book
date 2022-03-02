@@ -2,30 +2,49 @@
 #include "contact.h"
 void InitContact(struct Contact* ps)
 {
-	memset(ps->data, 0, sizeof(ps->data));
-	ps->size = 0;//设置通讯录最初只有零个元素
+	ps->data = (struct PeoInfo*)malloc(DEFAULT_SZ * sizeof(struct PeoInfo));
+	if (ps->data == NULL)
+	{
+		return;
+	}
+	ps->size = 0;
+	ps->capacity = DEFAULT_SZ;
+}
+void CheckCapacity(struct Contact*ps)
+{
+	if (ps->size == ps->capacity)
+	{
+		struct PeoInfo* ptr=realloc(ps->data, (ps->capacity + 2) * sizeof(struct PeoInfo));
+		if (ptr != NULL)
+		{
+			ps->data = ptr;
+			ps->capacity += 2;
+			printf("Extension succeed\n");
+		}
+		else
+		{
+			printf("Extension failed\n");
+		}
+	}
+
 }
 void AddContact(struct Contact* ps)
 {
-	if (ps->size == MAX)
-	{
-		printf("通讯录已满,无法增加\n");
-	}
-	else
-	{
-		printf("请输入名字：");
+	CheckCapacity(ps);
+	
+		printf("Please input the name：");
 		scanf("%s", ps->data[ps->size].name);
-		printf("请输入年龄：");
+		printf("Please input the age：");
 		scanf("%d", &(ps->data[ps->size].age));
-		printf("请输入性别：");
+		printf("Please input the gender：");
 		scanf("%s", ps->data[ps->size].sex);
-		printf("请输入电话：");
+		printf("Please input the phone number：");
 		scanf("%s", ps->data[ps->size].tele);
-		printf("请输入地址：");
+		printf("Please input the address：");
 		scanf("%s", ps->data[ps->size].addr);
 		ps->size++;
-		printf("添加成功\n");
-	}
+		printf("Added successfully\n");
+	
 }
 void ShowContact(const struct Contact* ps)
 {
@@ -86,14 +105,14 @@ static void bubble(void* base, int sz, int width, int(*cmp)(const void*, const v
 void DelContact(struct Contact* ps)
 {
 	char name[MAX_NAME];
-	printf("请输入被删除人的名字:\n");
+	printf("Please input the name of the person to delete:\n");
 	scanf("%s", name);
 	int pos=FindByName(ps,name);
 	//找到了返回名字所在元素的下标，找不到返回-1
 	
 	if (pos == -1)
 	{
-		printf("要删除的人不存在\n");
+		printf("The person is not in the address book\n");
 	}
 	else
 	{
@@ -103,18 +122,18 @@ void DelContact(struct Contact* ps)
 			ps->data[j] = ps->data[j + 1];
 		}
 		ps->size--;
-		printf("删除成功\n");
+		printf("Deleted successfully\n");
 	}
 }
 void SearchContact(const struct Contact* ps)
 {
 	char name[MAX_NAME];
-	printf("请输入要查找人的姓名：\n");
+	printf("Please enter the name of the person to find：\n");
 	scanf("%s", name);
 	int pos = FindByName(ps, name);
 	if (pos == -1)
 	{
-		printf("要查找的人不存在\n");
+		printf("The person is not in the address book\n");
 	}
 	else
 	{
@@ -132,29 +151,43 @@ void SearchContact(const struct Contact* ps)
 void ModifyContact(struct Contact* ps)
 {
 	char name[MAX_NAME];
-	printf("请输入要修改人的名字:\n");
+	printf("Please input the name of the person to modify:\n");
 	scanf("%s", name);
 	int pos=FindByName(ps, name);
 	if (pos == -1)
-		printf("要修改人的名字不存在");
+		printf("The person is not in the address book");
 	else
 	{
-		printf("请输入名字：");
+		printf("Please input the name：");
 		scanf("%s", ps->data[pos].name);
-		printf("请输入年龄：");
+		printf("Please input the age：");
 		scanf("%d", &(ps->data[pos].age));
-		printf("请输入性别：");
+		printf("Please input the gender：");
 		scanf("%s", ps->data[pos].sex);
-		printf("请输入电话：");
+		printf("Please input the phone number：");
 		scanf("%s", ps->data[pos].tele);
-		printf("请输入地址：");
+		printf("Please input the address：");
 		scanf("%s", ps->data[pos].addr);
 		
-		printf("修改完成\n");
+		printf("Modification completed\n");
 	}
 }
 void SortContact(struct Contact* ps)
 {
 	bubble(ps->data,ps->size,sizeof(ps->data[0]),cmp);
-	ShowContact(ps);
+	
+}
+void DestoryContact(struct Contact* ps)
+{
+	free(ps->data);
+	ps->data = NULL;
+}
+void menu()
+{
+	printf("*******************************************************************\n");
+	printf("********    1.Add                          2.Delete       *********\n");
+	printf("********    3.Retrieve                     4.Modify       *********\n");
+	printf("********    5.Display                      6.Sort         *********\n");
+	printf("********                      0.Exit                      *********\n");
+	printf("*******************************************************************\n");
 }

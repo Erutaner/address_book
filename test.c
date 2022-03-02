@@ -1,14 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #include "contact.h"
-void menu()
-{
-	printf("*******************************************************************\n");
-	printf("********    1.Add                          2.Delete       *********\n");
-	printf("********    3.Retrieve                     4.Modify       *********\n");
-	printf("********    5.Display                      6.Sort         *********\n");
-	printf("********                      0.Exit                      *********\n");
-	printf("*******************************************************************\n");
-}
 int main(void)
 {
 	int input = 0;
@@ -40,10 +31,12 @@ int main(void)
 			break;
 		case SORT:
 			SortContact(&con);
+			printf("Sorting succeed!\n");
 			break;
 		case EXIT:
+			//释放动态开辟的内存
+			DestoryContact(&con);
 			printf("Exit\n");
-			SortContact(&con);
 			break;
 		default:
 			printf("Wrong choice!\n");
