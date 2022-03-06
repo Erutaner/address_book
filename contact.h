@@ -5,9 +5,12 @@
 #define MAX_SEX 5
 #define MAX_TELE 12
 #define MAX_ADDR 30
+
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<errno.h>
+
 struct PeoInfo
 {
 	char name[MAX_NAME];
@@ -17,6 +20,7 @@ struct PeoInfo
 	char addr[MAX_ADDR];
 };
 //通讯录类型
+
 enum Option
 {
 	EXIT,
@@ -25,22 +29,35 @@ enum Option
 	SEARCH,
 	MODIFY,
 	SHOW,
-	SORT
-
+	SORT,
+	SAVE
 };
+
 struct Contact
 {
-	struct PeoInfo *data;//用指针代替数组，可以进行动态内存的调整
+	struct PeoInfo *data;//用指针代替数组，可以进行动态内存的调整  我愿称之为数据域
 	int size;//记录当前已经有的元素个数
-	int capacity;//Maximum capacity of current address_book
+	int capacity;//Maximum capacity of current address_book  下面这两个我愿称之为特征域
 };
 //声明函数
 void InitContact(struct Contact* ps);
+
 void AddContact(struct Contact* ps);
+
 void ShowContact(const struct Contact* ps);
+
 void DelContact(struct Contact* ps);
+
 void SearchContact(const struct Contact* ps);
+
 void ModifyContact(struct Contact* ps);
+
 void SortContact(struct Contact* ps);
+
 void DestoryContact(struct Contact* ps);
+
 void menu();
+
+void SaveContact(struct Contact* ps);
+
+void LoadContact(struct Contact* ps);

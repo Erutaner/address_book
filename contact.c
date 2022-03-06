@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #include "contact.h"
+void LoadContact(struct Contact* ps);
 void InitContact(struct Contact* ps)
 {
 	ps->data = (struct PeoInfo*)malloc(DEFAULT_SZ * sizeof(struct PeoInfo));
@@ -9,12 +10,13 @@ void InitContact(struct Contact* ps)
 	}
 	ps->size = 0;
 	ps->capacity = DEFAULT_SZ;
+	LoadContact(ps);
 }
 void CheckCapacity(struct Contact*ps)
 {
 	if (ps->size == ps->capacity)
 	{
-		struct PeoInfo* ptr=realloc(ps->data, (ps->capacity + 2) * sizeof(struct PeoInfo));
+		struct PeoInfo* ptr=realloc(ps->data, (ps->capacity + 2) * sizeof(struct PeoInfo));//realloc的返回值要先用另一个指针接收
 		if (ptr != NULL)
 		{
 			ps->data = ptr;
@@ -26,7 +28,7 @@ void CheckCapacity(struct Contact*ps)
 			printf("Extension failed\n");
 		}
 	}
-
+	return;
 }
 void AddContact(struct Contact* ps)
 {
@@ -42,7 +44,7 @@ void AddContact(struct Contact* ps)
 		scanf("%s", ps->data[ps->size].tele);
 		printf("Please input the address：");
 		scanf("%s", ps->data[ps->size].addr);
-		ps->size++;
+		ps->size++;//改变数据域后要改变特征域
 		printf("Added successfully\n");
 	
 }
@@ -188,6 +190,41 @@ void menu()
 	printf("********    1.Add                          2.Delete       *********\n");
 	printf("********    3.Retrieve                     4.Modify       *********\n");
 	printf("********    5.Display                      6.Sort         *********\n");
-	printf("********                      0.Exit                      *********\n");
+	printf("********    7.Save                         0.Exit         *********\n");
 	printf("*******************************************************************\n");
+}
+void SaveContact(struct Contact* ps)
+{
+	FILE* pfwrite = fopen("contact.dat", "wb");
+	if (!pfwrite)
+	{
+		printf("SaveContact : %s\n", strerror(errno));
+		return;
+	}
+	for (int i = 0;i < ps->size;i++)
+	{
+		fwrite(&(ps->data[i]), sizeof(struct PeoInfo), 1, pfwrite);
+	}
+	fclose(pfwrite);
+	pfwrite = NULL;
+}
+
+void LoadContact(struct Contact* ps)
+{
+	struct PeoInfo tmp = { 0 };
+	FILE* pfread = fopen("contact.dat", "rb");//以二进制形式从文件中读取
+	if (!pfread)
+	{
+		printf("LoadContact : %s\n", strerror(errno));
+		return;
+	}
+	while (fread(&tmp, sizeof(struct PeoInfo), 1, pfread))//fread的返回值是实际读取到的数目
+	{
+		CheckCapacity(ps);
+		ps->data[ps->size] = tmp;
+		ps->size++;
+	}
+
+	fclose(pfread);
+	pfread = NULL;
 }
