@@ -35,8 +35,12 @@ int main(void)
 			break;
 		case EXIT:
 			//释放动态开辟的内存
+			SaveContact(&con);
 			DestoryContact(&con);
 			printf("Exit\n");
+			break;
+		case SAVE:
+			SaveContact(&con);
 			break;
 		default:
 			printf("Wrong choice!\n");
